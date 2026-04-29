@@ -1,3 +1,3 @@
-module github.com/shailesh097/fedora_tweed_go
+module github.com/shailesh097/fedora-tweed-go
 
 go 1.25.9
