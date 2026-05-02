@@ -9,16 +9,12 @@ import (
 )
 
 const (
-	reset      = "\033[0m"
-	bold       = "\033[1m"
-	red        = "\033[31m"
-	green      = "\033[32m"
-	yellow     = "\033[33m"
-	blue       = "\033[34m"
-	magenta    = "\033[35m"
-	grey       = "\033[37m"
-	cyan       = "\033[96m"
-	lightGreen = "\033[92m"
+	reset  = "\033[0m"
+	bold   = "\033[1m"
+	red    = "\033[31m"
+	green  = "\033[32m"
+	yellow = "\033[33m"
+	cyan   = "\033[96m"
 )
 
 type Logger struct {
@@ -49,22 +45,22 @@ func createLogFile() (*os.File, error) {
 		return nil, err
 	}
 
-	dir := filepath.Join(home, "personal_logs", "fedora_tweed_go")
+	dir := filepath.Join(home, "personal_logfiles", "fedora_tweed_go")
 
 	// create dirs
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return nil, err
 	}
 
-	timestamp := time.Now().Format("2006-01-02_15_03_04")
+	timestamp := time.Now().Format("2006-01-02_15_04_05")
 	filename := fmt.Sprintf("setup_%s.log", timestamp)
 	fullPath := filepath.Join(dir, filename)
 	return os.Create(fullPath) // create file in personal log dir
 }
 
 func (l *Logger) writeBoth(termWriter io.Writer, color, prefix, msg string) {
-	fmt.Fprintf(termWriter, "%s%s %s%s\n", color, prefix, msg, reset)
-	fmt.Fprintf(l.fileOut, "%s %s\n", prefix, msg)
+	fmt.Fprintf(termWriter, "%s%s%s %s%s\n", color, bold, prefix, msg, reset) // terminal
+	fmt.Fprintf(l.fileOut, "%s %s\n", prefix, msg)                            // logfile
 }
 
 // cyan for Information message

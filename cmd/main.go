@@ -11,5 +11,3 @@ import (
 	"github.com/shailesh097/fedora_tweed_go/internal/distro/fedora"
 	"github.com/shailesh097/fedora_tweed_go/internal/logger"
 )
-
-
