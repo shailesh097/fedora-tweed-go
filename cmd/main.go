@@ -34,6 +34,17 @@ func main() {
 		os.Exit(0)
 	}
 
+	d, err := resolveDistro(detectedOS)
+	if err != nil {
+		log.Error("%v", err)
+		os.Exit(1)
+	}
+
+	if err := d.Setup(); err != nil {
+		log.Error("Setup failed: %v", err)
+		os.Exit(1)
+	}
+
 }
 
 func resolveDistro(osID string) (distro.Distro, error) {
