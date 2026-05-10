@@ -34,6 +34,11 @@ func (f *Fedora) Setup() error {
 		{"Setting up Power Profile", f.setupPowerProfile},
 		{"Updating System", f.updateSystem},
 		{"Enabling RPM Fusion Repositories", f.enableRPMFusion},
+		{"Enabling Flatpak", f.enableFlatpak},
+		{"Installing essential tools", f.installEssentialTools},
+		{"Setting Catpuccin-Mocha theme for kitty", f.setKittyTheme},
+		{"Configuring git", f.configureGit},
+		// {"Installing Nvchad", f.insatallNvchad},
 	}
 
 	for _, step := range steps {
@@ -45,6 +50,42 @@ func (f *Fedora) Setup() error {
 
 	f.log.Message("Fedora Setup Completed!")
 	return nil
+}
+
+// func (f *Fedora) insatallNvchad() error {
+// 	configPath := fmt.Sprintf("%s/.config/nvim", os.Getenv("HOME"))
+// 	return exec.Command("git", "clone", "https://github.com/NvChad/starter", configPath).Run()
+// }
+
+func (f *Fedora) configureGit() error {
+	if err := exec.Command("git", "config", "--global", "user.name", "shailesh097").Run(); err != nil {
+		return err
+	}
+	return exec.Command("git", "config", "--global", "user.email", "sailesh.pokharel.234@gmail.com").Run()
+}
+
+func (f *Fedora) setKittyTheme() error {
+	return exec.Command("kitty", "+kitten", "themes", "Catppuccin-Mocha").Run()
+}
+
+func (f *Fedora) installEssentialTools() error {
+	packages := []string{
+		"curl", "wget", "git", "neovim", "fzf", "conky", "kitty",
+		"fish", "nvtop", "btop", "fastfetch", "npm", "gnome-tweaks",
+		"discord", "vlc", "gparted", "bash", "shc", "zoxide", "tldr",
+		"xdotool",
+	}
+
+	args := append([]string{"dnf", "install", "-y", "--skip-unavailable"}, packages...)
+	return exec.Command("sudo", args...).Run()
+}
+
+func (f *Fedora) enableFlatpak() error {
+	if err := exec.Command("sudo", "dnf", "install", "-y", "flatpak").Run(); err != nil {
+		return err
+	}
+	return exec.Command("flatpak", "remote-add", "--if-not-exists", "flathub",
+		"https://dl.flathub.org/repo/flathub.flatpakrepo").Run()
 }
 
 func (f *Fedora) enableRPMFusion() error {
