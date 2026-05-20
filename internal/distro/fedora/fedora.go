@@ -39,6 +39,7 @@ func (f *Fedora) Setup() error {
 		{"Setting Catpuccin-Mocha theme for kitty", f.setKittyTheme},
 		{"Configuring git", f.configureGit},
 		// {"Installing Nvchad", f.insatallNvchad},
+		{"Installing Extension Manager", f.installExtensionManager},
 	}
 
 	for _, step := range steps {
@@ -56,6 +57,10 @@ func (f *Fedora) Setup() error {
 // 	configPath := fmt.Sprintf("%s/.config/nvim", os.Getenv("HOME"))
 // 	return exec.Command("git", "clone", "https://github.com/NvChad/starter", configPath).Run()
 // }
+
+func (f *Fedora) installExtensionManager() error {
+	return exec.Command("flatpak", "install", "-y", "flathub", "com.mattjakeman.ExtensionManager").Run()
+}
 
 func (f *Fedora) configureGit() error {
 	if err := exec.Command("git", "config", "--global", "user.name", "shailesh097").Run(); err != nil {
@@ -117,7 +122,7 @@ func (f *Fedora) setupPowerProfile() error {
 
 func (f *Fedora) configureDNF() error {
 	configs := []string{
-		"defaultyes=True",
+		"defaultyes=true",
 		"max_parallel_downloads=10",
 	}
 
