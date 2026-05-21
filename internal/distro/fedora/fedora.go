@@ -40,6 +40,9 @@ func (f *Fedora) Setup() error {
 		{"Configuring git", f.configureGit},
 		// {"Installing Nvchad", f.insatallNvchad},
 		{"Installing Extension Manager", f.installExtensionManager},
+		// {"Setting up dotfiles", f.setupDotfiles} -- handled in dotfiles.go
+		{"Installing VScode", f.installVscode},
+		// {"Installing Brave Browser", f.installBrave},
 	}
 
 	for _, step := range steps {
@@ -50,6 +53,26 @@ func (f *Fedora) Setup() error {
 	}
 
 	f.log.Message("Fedora Setup Completed!")
+	return nil
+}
+
+// func (f *Fedora) installBrave() error {
+//
+// }
+
+func (f *Fedora) installVscode() error {
+	steps := [][]string{
+		{"sudo", "rpm", "--import", "https://packages.microsoft.com/keys/microsoft.asc"},
+		{"sudo", "sh", "-c", `echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo`},
+		{"sudo", "dnf", "check-update"},
+		{"sudo", "dnf", "install", "-y", "code"},
+	}
+
+	for _, step := range steps {
+		if err := exec.Command(step[0], step[1:]...).Run(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -78,7 +101,7 @@ func (f *Fedora) installEssentialTools() error {
 		"curl", "wget", "git", "neovim", "fzf", "conky", "kitty",
 		"fish", "nvtop", "btop", "fastfetch", "npm", "gnome-tweaks",
 		"discord", "vlc", "gparted", "bash", "shc", "zoxide", "tldr",
-		"xdotool",
+		"xdotool", "golang",
 	}
 
 	args := append([]string{"dnf", "install", "-y", "--skip-unavailable"}, packages...)
