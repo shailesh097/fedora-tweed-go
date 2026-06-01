@@ -43,6 +43,9 @@ func (f *Fedora) Setup() error {
 		// {"Setting up dotfiles", f.setupDotfiles} -- handled in dotfiles.go
 		{"Installing VScode", f.installVscode},
 		{"Installing Brave Browser", f.installBrave},
+		{"Installing Obsidian", f.installObsidian},
+		{"Installing Spotify", f.installSpotify},
+		{"Enabling Maximize and Minimize buttons", f.enableTitlebarButtons},
 	}
 
 	for _, step := range steps {
@@ -56,6 +59,17 @@ func (f *Fedora) Setup() error {
 	return nil
 }
 
+func (f *Fedora) enableTitlebarButtons() error {
+	return exec.Command("gsettings", "set", "org.gnome.desktop.wm.preferences",
+		"button-layout", "appmenu:minimize,maximize,close").Run()
+}
+func (f *Fedora) installObsidian() error {
+	return exec.Command("flatpak", "install", "-y", "flathub", "md.obsidian.Obsidian").Run()
+}
+
+func (f *Fedora) installSpotify() error {
+	return exec.Command("flatpak", "install", "-y", "flathub", "com.spotify.Client").Run()
+}
 func (f *Fedora) installBrave() error {
 	if err := exec.Command("sudo", "dnf", "install", "-y", "dnf-plugins-core").Run(); err != nil {
 		return err
