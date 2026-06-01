@@ -42,7 +42,7 @@ func (f *Fedora) Setup() error {
 		{"Installing Extension Manager", f.installExtensionManager},
 		// {"Setting up dotfiles", f.setupDotfiles} -- handled in dotfiles.go
 		{"Installing VScode", f.installVscode},
-		// {"Installing Brave Browser", f.installBrave},
+		{"Installing Brave Browser", f.installBrave},
 	}
 
 	for _, step := range steps {
@@ -56,9 +56,19 @@ func (f *Fedora) Setup() error {
 	return nil
 }
 
-// func (f *Fedora) installBrave() error {
-//
-// }
+func (f *Fedora) installBrave() error {
+	if err := exec.Command("sudo", "dnf", "install", "-y", "dnf-plugins-core").Run(); err != nil {
+		return err
+	}
+
+	repoUrl := "https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo"
+
+	if err := exec.Command("sudo", "dnf", "config-manager", "addrepo", "--overwrite", "--from-repofile="+repoUrl).Run(); err != nil {
+		return nil
+	}
+
+	return exec.Command("sudo", "dnf", "install", "brave-browser", "-y").Run()
+}
 
 func (f *Fedora) installVscode() error {
 	steps := [][]string{
