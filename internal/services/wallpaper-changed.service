@@ -1,0 +1,9 @@
+[Unit]
+Description=Change Wallpaper Every 5 Minutes
+
+[Service]
+ExecStart=/bin/bash /home/pokhares/.config/myscripts/dynamic_wallpaper.sh
+Restart=always
+
+[Install]
+WantedBy=default.target

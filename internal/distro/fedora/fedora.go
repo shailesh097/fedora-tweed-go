@@ -46,6 +46,7 @@ func (f *Fedora) Setup() error {
 		{"Installing Obsidian", f.installObsidian},
 		{"Installing Spotify", f.installSpotify},
 		{"Enabling Maximize and Minimize buttons", f.enableTitlebarButtons},
+		{"Installing Wallpaper Changer", f.installWallpaperChanger},
 	}
 
 	for _, step := range steps {
@@ -59,12 +60,49 @@ func (f *Fedora) Setup() error {
 	return nil
 }
 
+func (f *Fedora) installWallpaperChanger() error {
+	home := os.Getenv("HOME")
+	servicesDir := fmt.Sprintf("%s/.config/systemd/user/", home)
+	scriptsDir := fmt.Sprintf("%s/.config/myscripts/", home)
+	serviceCpy := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/services/wallpaper-changed.service", home)
+	shCpy := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/services/dynamic_wallpaper.sh", home)
+
+	if err := os.MkdirAll(servicesDir, 0755); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(scriptsDir, 0755); err != nil {
+		return err
+	}
+
+	if err := exec.Command("cp", serviceCpy, servicesDir).Run(); err != nil {
+		return err
+	}
+
+	if err := exec.Command("cp", shCpy, scriptsDir).Run(); err != nil {
+		return err
+	}
+
+	for _, args := range [][]string{
+		{"--user", "daemon-reload"},
+		{"--user", "enable", "wallpaper-changed.service"},
+		{"--user", "start", "wallpaper-changed.service"},
+	} {
+		if err := exec.Command("systemctl", args...).Run(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (f *Fedora) enableTitlebarButtons() error {
 	return exec.Command("gsettings", "set", "org.gnome.desktop.wm.preferences",
 		"button-layout", "appmenu:minimize,maximize,close").Run()
 }
+
 func (f *Fedora) installObsidian() error {
-	return exec.Command("flatpak", "install", "-y", "flathub", "md.obsidian.Obsidian").Run()
+	return exec.Command("flatpak", "install", "-y", "flathub",
+		"md.obsidian.Obsidian").Run()
 }
 
 func (f *Fedora) installSpotify() error {
