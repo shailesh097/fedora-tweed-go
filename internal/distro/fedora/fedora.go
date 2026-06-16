@@ -100,8 +100,8 @@ func (f *Fedora) installWallpaperChanger() error {
 	home := os.Getenv("HOME")
 	servicesDir := fmt.Sprintf("%s/.config/systemd/user/", home)
 	scriptsDir := fmt.Sprintf("%s/.config/myscripts/", home)
-	serviceCpy := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/services/wallpaper-changed.service", home)
-	shCpy := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/services/dynamic_wallpaper.sh", home)
+	serviceCpy := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/misc/wallpaper-changed.service", home)
+	shCpy := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/scripts/dynamic_wallpaper.sh", home)
 
 	if err := os.MkdirAll(servicesDir, 0755); err != nil {
 		return err
