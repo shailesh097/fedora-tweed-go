@@ -47,6 +47,7 @@ func (f *Fedora) Setup() error {
 		{"Installing Spotify", f.installSpotify},
 		{"Enabling Maximize and Minimize buttons", f.enableTitlebarButtons},
 		{"Installing Wallpaper Changer", f.installWallpaperChanger},
+		{"Installing Dotfiles Sync", f.installDotfilesSync},
 	}
 
 	for _, step := range steps {
@@ -58,6 +59,41 @@ func (f *Fedora) Setup() error {
 
 	f.log.Message("Fedora Setup Completed!")
 	return nil
+}
+
+func (f *Fedora) installDotfilesSync() error {
+	home := os.Getenv("HOME")
+	binDir := fmt.Sprintf("%s/.local/bin", home)
+	binScript := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/scripts/dotfiles_sync.sh", home)
+	binFile := fmt.Sprintf("%s/git_clone/fedora_tweed_go/internal/scripts/dotfiles-sync", home)
+
+	if err := os.MkdirAll(binDir, 0755); err != nil {
+		return err
+	}
+
+	syncBin := fmt.Sprintf("%s/.local/bin/sync-dotfiles", home)
+	if _, err := os.Stat(syncBin); err == nil {
+		f.log.Warn("sync-dotfiles binary already present, removing...")
+		if err := os.Remove(syncBin); err != nil {
+			return err
+		}
+	}
+
+	// make dotfiles-sync executable
+	if err := exec.Command("chmod", "+x", binScript).Run(); err != nil {
+		return err
+	}
+
+	// install shc if not present
+	if err := exec.Command("sudo", "dnf", "install", "-y", "shc", "--skip-unavailable").Run(); err != nil {
+		return err
+	}
+
+	if err := exec.Command("shc", "-f", binScript, "-o", binFile).Run(); err != nil {
+		return err
+	}
+
+	return exec.Command("cp", binFile, binDir).Run()
 }
 
 func (f *Fedora) installWallpaperChanger() error {
