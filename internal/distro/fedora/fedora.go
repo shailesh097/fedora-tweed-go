@@ -41,6 +41,7 @@ func (f *Fedora) Setup() error {
 		// {"Installing Nvchad", f.insatallNvchad},
 		{"Installing Extension Manager", f.installExtensionManager},
 		// {"Setting up dotfiles", f.setupDotfiles} -- handled in dotfiles.go
+		// {"Setting Up keyboard Shortcuts"}, -- handled in gnome/keyboard.go
 		{"Installing VScode", f.installVscode},
 		{"Installing Brave Browser", f.installBrave},
 		{"Installing Obsidian", f.installObsidian},
@@ -48,6 +49,8 @@ func (f *Fedora) Setup() error {
 		{"Enabling Maximize and Minimize buttons", f.enableTitlebarButtons},
 		{"Installing Wallpaper Changer", f.installWallpaperChanger},
 		{"Installing Dotfiles Sync", f.installDotfilesSync},
+		{"Changing shell to Fish", f.changeShellToFish},
+		{"Install Nvidia Drivers", f.installNvidiaDrivers},
 	}
 
 	for _, step := range steps {
@@ -58,6 +61,26 @@ func (f *Fedora) Setup() error {
 	}
 
 	f.log.Message("Fedora Setup Completed!")
+	return nil
+}
+
+func (f *Fedora) installNvidiaDrivers() error {
+	if err := exec.Command("sudo", "dnf", "update", "-y").Run(); err != nil {
+		return err
+	}
+
+	if err := exec.Command("sudo", "dnf", "install", "-y", "akmod-nvidia").Run(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (f *Fedora) changeShellToFish() error {
+	getUser := os.Getenv("USER")
+	if err := exec.Command("sudo", "usermod", "-s", "/usr/bin/fish", getUser).Run(); err != nil {
+		return err
+	}
 	return nil
 }
 
