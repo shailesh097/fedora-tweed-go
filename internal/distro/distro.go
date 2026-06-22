@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/shailesh097/fedora-tweed-go/internal/distro/arch"
+	"github.com/shailesh097/fedora-tweed-go/internal/distro/fedora"
 )
 
 type Distro interface {
@@ -33,4 +36,15 @@ func DetectOS() (string, error) {
 	}
 
 	return "", fmt.Errorf("could not find ID field in /etc/os-release")
+}
+
+func ResolveDistro(osID string) (Distro, error) {
+	switch osID {
+	case "fedora":
+		return fedora.New(), nil
+	case "arch":
+		return arch.New(), nil
+	default:
+		return nil, fmt.Errorf("Unsupported operating system: %s", osID)
+	}
 }

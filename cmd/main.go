@@ -7,8 +7,6 @@ import (
 	"strings"
 
 	"github.com/shailesh097/fedora-tweed-go/internal/distro"
-	"github.com/shailesh097/fedora-tweed-go/internal/distro/arch"
-	"github.com/shailesh097/fedora-tweed-go/internal/distro/fedora"
 	"github.com/shailesh097/fedora-tweed-go/internal/logger"
 )
 
@@ -34,7 +32,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	d, err := resolveDistro(detectedOS)
+	d, err := distro.ResolveDistro(detectedOS)
 	if err != nil {
 		log.Error("%v", err)
 		os.Exit(1)
@@ -45,17 +43,6 @@ func main() {
 		os.Exit(1)
 	}
 
-}
-
-func resolveDistro(osID string) (distro.Distro, error) {
-	switch osID {
-	case "fedora":
-		return fedora.New(), nil
-	case "arch":
-		return arch.New(), nil
-	default:
-		return nil, fmt.Errorf("Unsupported operating system: %s", osID)
-	}
 }
 
 // continue with asking prompt in case of invalid input
